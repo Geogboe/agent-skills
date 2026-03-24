@@ -1,4 +1,4 @@
-# agent-skills
+# agentic-tools
 
 This repository is a home for reusable [Agent Skills](https://agentskills.io/home): open, portable skill packages that give coding agents task-specific instructions and references.
 
