@@ -1,0 +1,47 @@
+{
+  "skill_name": "github-release-installers",
+  "evals": [
+    {
+      "id": 1,
+      "name": "generate-cross-platform-installers",
+      "prompt": "Create install.sh and install.ps1 for my GitHub Releases binary so users can install with curl/irm. It must verify checksums and work on Linux, macOS, and Windows.",
+      "expected_output": "Installer guidance/code that includes platform detection, release version resolution, checksum verification, archive extraction, install destination selection, and version confirmation.",
+      "files": [],
+      "expectations": [
+        "Includes both install.sh and install.ps1 flows",
+        "Uses GitHub releases latest lookup with override option",
+        "Verifies checksum using checksums.txt",
+        "Handles archive differences (.tar.gz for Unix, .zip for Windows)",
+        "Includes post-install binary version check"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "env-overrides-required",
+      "prompt": "Update my installer design so operators can use env vars to enable debug logging, set install directory, pin a version, and force reinstall.",
+      "expected_output": "Explicit environment-variable contract and behavior rules for both shell and PowerShell installers.",
+      "files": [],
+      "expectations": [
+        "Defines env overrides for debug, install dir, version, and force reinstall",
+        "States version override bypasses latest lookup",
+        "States force override reinstalls even when binary exists",
+        "States install directory override takes precedence",
+        "Applies the same policy to install.sh and install.ps1"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "path-remediation-prompt",
+      "prompt": "After install, if the binary directory is not in PATH, show a clear command the user can copy and paste based on their shell/profile file.",
+      "expected_output": "Post-install PATH verification and shell-specific remediation commands for bash/zsh/fish and PowerShell.",
+      "files": [],
+      "expectations": [
+        "Requires post-install PATH verification",
+        "Uses command -v or equivalent on Unix and Get-Command on PowerShell",
+        "Provides shell-specific profile update command examples",
+        "Provides explicit PowerShell user PATH update command",
+        "Instructs user to restart shell or source profile after update"
+      ]
+    }
+  ]
+}

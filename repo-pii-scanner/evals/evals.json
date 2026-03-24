@@ -1,0 +1,26 @@
+{
+  "skill_name": "repo-pii-scanner",
+  "evals": [
+    {
+      "id": 0,
+      "name": "eval-explicit-scan",
+      "prompt": "Scan the current repo for PII and secrets — I'm about to open source it and want to make sure nothing private is in there.",
+      "expected_output": "A structured findings table covering current source files and full git history, with a verdict and prompt for user to review findings.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "eval-implicit-issue",
+      "prompt": "I want to create a public GitHub issue on owner/my-cli-tool requesting homebrew installation support. The title should be 'Add Homebrew tap for easier installation' and it should mention the install.sh we just added.",
+      "expected_output": "Should proactively scan the repo content being referenced for PII before creating the issue, then proceed.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "eval-implicit-push",
+      "prompt": "Can you push the latest changes to the remote? We've got the new install scripts ready to go.",
+      "expected_output": "Should proactively scan the new files (install.sh, install.ps1) for PII before pushing to the public repo.",
+      "files": []
+    }
+  ]
+}

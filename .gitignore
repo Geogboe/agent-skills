@@ -1,0 +1,10 @@
+# Agents
+.agents/
+.claude/
+.codex/
+codex/
+
+# Skill eval workspaces (generated run artifacts, not committed)
+# Canonical eval definitions live in each skill at evals/evals.json
+.evals/
+*-workspace/

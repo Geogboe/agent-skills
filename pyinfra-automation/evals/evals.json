@@ -1,0 +1,62 @@
+{
+  "skill_name": "pyinfra-automation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Set up nginx on my Ubuntu 22.04 VPS at 192.168.1.100, deploy a static site from a local ./site/ directory, and make sure nginx starts on boot. I SSH in as 'deploy' with sudo.",
+      "expected_output": "A complete pyinfra project scaffold (inventory.py, deploy.py, group_data/all.py) that installs nginx, uploads the site files from ./site/ to a web root, and ensures nginx is enabled and running. Must use apt.packages, files.rsync or files.put, files.directory, and systemd.service operations. Should use _sudo=True and set the correct ssh_user.",
+      "files": [],
+      "expectations": [
+        "Output includes an inventory.py file with the VPS IP 192.168.1.100",
+        "Output includes apt.packages to install nginx",
+        "Output uses files.put, files.rsync, or files.directory to handle the ./site/ directory",
+        "Output includes systemd.service with running=True and enabled=True for nginx",
+        "All operations that need root access use _sudo=True",
+        "Output includes the standard project scaffold (inventory.py, deploy.py, group_data/all.py)",
+        "SSH user 'deploy' is set somewhere (inventory or group_data)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Convert this Ansible playbook to pyinfra:\n\n```yaml\n---\n- hosts: db\n  become: yes\n  tasks:\n    - name: Install PostgreSQL\n      apt:\n        name: postgresql\n        state: present\n        update_cache: yes\n\n    - name: Ensure PostgreSQL is running\n      service:\n        name: postgresql\n        state: started\n        enabled: yes\n\n    - name: Create app database user\n      postgresql_user:\n        name: appuser\n        password: secret123\n        state: present\n      become_user: postgres\n\n    - name: Create app database\n      postgresql_db:\n        name: appdb\n        owner: appuser\n        state: present\n      become_user: postgres\n```",
+      "expected_output": "A pyinfra deploy.py (and optionally inventory.py) that performs the equivalent tasks: installs postgresql via apt.packages, ensures the service is running via systemd.service, and creates the user/database via server.shell or a dedicated postgres operation. Should map Ansible 'become' to _sudo=True and 'become_user' to _sudo_user='postgres'.",
+      "files": [],
+      "expectations": [
+        "Output includes apt.packages for postgresql with update=True",
+        "Output includes systemd.service for postgresql with running=True and enabled=True",
+        "Output uses _sudo=True where Ansible uses become: yes",
+        "Output handles the database user creation (server.shell or postgres operation with _sudo_user='postgres')",
+        "Output handles the database creation",
+        "No raw YAML or Ansible syntax remains in the output — it is pure Python pyinfra code"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Write a custom pyinfra fact that checks if a TCP port is listening (e.g., port 5432) so I can use it as a condition in my deploy — only run migrations if postgres is already running.",
+      "expected_output": "A Python file defining a custom FactBase subclass with a parameterised command method that checks if a port is listening (using ss, netstat, or lsof), a process method that returns True/False, a default value, and a usage example showing host.get_fact(PortListening, port=5432) used with an _if condition or explicit check to conditionally run migrations.",
+      "files": [],
+      "expectations": [
+        "Output defines a class that inherits from FactBase",
+        "Output includes a command method that accepts a port parameter",
+        "Output includes a process method that parses the command output and returns True/False",
+        "Output includes a default = False attribute",
+        "Output includes a usage example with host.get_fact(..., port=5432)",
+        "Usage example shows how to use the fact to conditionally run a migration command"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I need to manage some Windows Server 2022 machines with pyinfra alongside my Linux boxes. Walk me through setup and show me how to get basic system info from a Windows host.",
+      "expected_output": "Step-by-step setup instructions including: pyinfra-windows installation command, WinRM enablement on the Windows host (PowerShell commands), how to target Windows hosts with @winrm/ syntax, and a working pyinfra deploy.py example that uses win_facts.server.ComputerInfo to retrieve OS info from the Windows host.",
+      "files": [],
+      "expectations": [
+        "Output includes the pyinfra-windows installation command (pip or uv with the GitHub URL)",
+        "Output includes WinRM setup PowerShell commands for the Windows host",
+        "Output shows the @winrm/<host> connector syntax",
+        "Output shows an import from pyinfra_windows.facts or pyinfra_windows operations",
+        "Output includes a usage example that retrieves ComputerInfo or similar system fact from the Windows host",
+        "Output mentions authentication method (ntlm, basic, or kerberos)"
+      ]
+    }
+  ]
+}

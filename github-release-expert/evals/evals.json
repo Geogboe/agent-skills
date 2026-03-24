@@ -1,0 +1,47 @@
+{
+  "skill_name": "github-release-expert",
+  "evals": [
+    {
+      "id": 1,
+      "name": "release-please-from-scratch",
+      "prompt": "Set up automated releases for my Go CLI repo from scratch using Release Please and GoReleaser. I want release PRs, tags, GitHub Releases, and release assets after merge.",
+      "expected_output": "A complete setup plan and file changes that include CI checks, Release Please config files, and a single workflow using the two-job pattern (release-please + goreleaser) with required permissions.",
+      "files": [],
+      "expectations": [
+        "Includes release-please-config.json and .release-please-manifest.json",
+        "Uses one workflow file with release-please and goreleaser jobs together",
+        "Uses release-please outputs for conditional goreleaser execution",
+        "Specifies required workflow permissions: contents: write and pull-requests: write",
+        "Explains end-to-end validation flow from feat commit to release assets"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "fix-split-workflows",
+      "prompt": "My release process is broken: Release Please creates tags/releases but GoReleaser never runs. I currently have release-please.yml and a separate goreleaser.yml triggered on release published. Fix this.",
+      "expected_output": "An explanation of why separate workflows fail with GITHUB_TOKEN plus a corrected single-workflow two-job pattern that checks out the created tag for goreleaser.",
+      "files": [],
+      "expectations": [
+        "Explains GitHub Actions workflow-chaining limitation with GITHUB_TOKEN",
+        "Moves to single workflow file with both jobs",
+        "Uses tag output from release-please for checkout ref",
+        "Keeps goreleaser gated by release_created output",
+        "Includes required permissions and checkout fetch-depth guidance"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "fix-release-please-permissions",
+      "prompt": "Release Please fails with a message that it is not permitted to create pull requests. How do I fix repository settings and verify?",
+      "expected_output": "Correct remediation steps for GitHub Actions workflow permissions, including CLI command and verification guidance.",
+      "files": [],
+      "expectations": [
+        "Identifies read-only workflow permissions as root cause",
+        "Provides gh api command to set default_workflow_permissions=write",
+        "Includes can_approve_pull_request_reviews=true",
+        "Mentions UI path in repository settings for equivalent configuration",
+        "Includes simple validation steps after permission change"
+      ]
+    }
+  ]
+}
