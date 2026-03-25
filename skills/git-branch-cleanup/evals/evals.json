@@ -1,0 +1,101 @@
+{
+  "skill_name": "git-branch-cleanup",
+  "evals": [
+    {
+      "id": 1,
+      "name": "fetch-before-inspection",
+      "prompt": "Can you check what branches I can clean up?",
+      "expected_output": "The skill runs git fetch --prune origin as the very first command, then inspects branches via parallel subagents, and presents a full classification table with recommendations. It does not delete anything.",
+      "files": [],
+      "expectations": [
+        "Runs git fetch --prune origin before any inspection commands",
+        "Does NOT run git branch -vv or git branch --merged before the fetch completes",
+        "Presents a classification table with columns: branch, classification, recommendation, reason",
+        "Ends with a 'Proposed actions (awaiting your approval)' summary",
+        "Does NOT run git branch -d or any deletion command before user approval"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "merged-feature-branch-recommendation",
+      "prompt": "Clean up my local branches. I've got a few merged feature branches hanging around after some PRs were merged.",
+      "expected_output": "The skill fetches, inspects branches via parallel subagents, presents a classification table recommending deletion of merged branches, and waits for user approval before executing anything.",
+      "files": [],
+      "expectations": [
+        "Runs git fetch --prune origin first",
+        "Uses parallel subagents for branch and stash inspection",
+        "Runs git branch --merged <default> to identify merged branches",
+        "Excludes the current branch and default branch from the recommended delete list",
+        "Classifies merged branches as 'safe to delete' with recommendation 'recommend delete'",
+        "Presents full findings table before any action",
+        "Ends with explicit approval prompt listing proposed deletions",
+        "Does NOT run git branch -d until user approves"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "unmerged-branch-with-unique-commits",
+      "prompt": "Delete the experiment/new-parser branch, it's old and I don't think I need it anymore.",
+      "expected_output": "The skill fetches, checks for unique commits on the branch, surfaces the unique commits in the recommendation table, classifies it as uncertain, and waits for explicit user confirmation before running git branch -D.",
+      "files": [],
+      "expectations": [
+        "Runs git fetch --prune origin first",
+        "Runs git log --oneline <default>..<branch> to check for unique commits",
+        "Classifies the branch as 'uncertain — review needed', not 'safe to delete'",
+        "Shows the list of unique commits inline in the findings output",
+        "Does NOT run git branch -D before user confirms they understand the commits will be lost",
+        "Includes the branch in the 'awaiting approval' summary with a note about unique commits",
+        "Only proceeds with git branch -D after explicit user approval"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "never-delete-current-branch",
+      "prompt": "Delete all merged branches including the current one if it's merged.",
+      "expected_output": "The skill identifies the current branch, classifies it as 'keep' regardless of merge status, explains it cannot be deleted while checked out, and includes all other merged branches in the approval-pending recommendation list.",
+      "files": [],
+      "expectations": [
+        "Runs git branch --show-current to identify the current branch",
+        "Classifies the current branch as 'keep' with reason 'current branch'",
+        "Does NOT include the current branch in the proposed delete list",
+        "Explains to the user that the current branch cannot be deleted while checked out",
+        "Suggests switching to a different branch if the user wants to delete it",
+        "Lists other merged branches in the recommendation table with 'recommend delete'",
+        "Waits for approval before executing any deletions"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "release-please-automation-branch",
+      "prompt": "I want to clean up all my remote branches. Delete anything that looks stale.",
+      "expected_output": "The skill fetches, inspects, surfaces release-please and other automation branches as 'keep', presents a full recommendation table, and waits for per-item approval before running any git push origin --delete.",
+      "files": [],
+      "expectations": [
+        "Runs git fetch --prune origin first",
+        "Identifies branches matching automation patterns (release-please--*, dependabot/*, renovate/*)",
+        "Classifies automation branches as 'keep' with reason 'automation-managed branch'",
+        "Does NOT include automation branches in the proposed delete list",
+        "Does not batch-delete — presents a full recommendation table and awaits approval",
+        "Distinguishes between remote branch deletion and pruning stale remote-tracking refs",
+        "Does NOT run git push origin --delete until user has approved specific branches"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "stash-cleanup-recommendation",
+      "prompt": "I have a bunch of stashes I haven't touched in months. Help me figure out which ones I can drop.",
+      "expected_output": "The skill fetches, inspects stashes via a dedicated subagent, runs git stash show for each stash, classifies them by age and branch status, presents a full stash recommendation table, and waits for user approval before dropping anything.",
+      "files": [],
+      "expectations": [
+        "Runs git fetch --prune origin first",
+        "Uses a dedicated subagent (Subagent B) to run git stash list",
+        "Runs git stash show stash@{N} for each stash to collect diff summaries",
+        "Classifies stashes into: likely outdated / uncertain / keep",
+        "Includes age, originating branch, and diff summary for each stash in the output",
+        "Does NOT run git stash drop before presenting findings and receiving approval",
+        "Ends with 'Proposed actions (awaiting your approval)' listing specific stashes to drop",
+        "Drops stashes in reverse index order (highest first) after approval to avoid index shifting"
+      ]
+    }
+  ]
+}
